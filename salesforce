@@ -1,0 +1,33 @@
+@RestResource(urlMapping='/Contact/*')
+global class getAccountRecords {
+    @HttpGet
+    global static string getContactdetails() 
+    {
+	 RestRequest request = RestContext.request;
+     RestResponse res = RestContext.response;	
+	 
+	 Map<String, string> params = new Map<String, string>(request.params);
+	// String phonenumber = '+';
+	 String phonenumber =params.get('phonenumber');
+	 List<Account> accList = new List<Account>();
+	 set<Id> idList = new Set<Id>();
+	 try {
+         system.debug('phonenumber'+phonenumber);
+		 List<Contact> conList = [Select id,phone,AccountId from Contact where phone =: '+'+phonenumber];
+		 for(Contact con : conList)
+		 {
+			 idList.add(con.AccountId);
+		 }
+		 
+		 accList = [Select id,Name from Account where Id =:idList]; 
+		 
+		 
+	 }
+	 catch(Exception e)
+     {
+            System.debug('An exception occurred: ' + e.getMessage());
+     }
+        return json.serialize(accList);
+	}
+
+}
